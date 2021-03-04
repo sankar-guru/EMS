@@ -153,7 +153,7 @@ delete_employee_mutation = """
 """
 
 
-print(employee_list_query,'dfds')
+# print(employee_list_query,'dfds')
 # ********** Test Employee Schema ******************** #
 @pytest.mark.django_db
 class TestEmployeeSchema(TestCase):
