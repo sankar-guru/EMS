@@ -8,10 +8,11 @@ def Email_validator(email):
     # pass the regular expression
     # and the string in search() method
     if (re.search(emial_regex, email)):
-        ValidationError("Valid Email for ".format(email))
+        return True
 
     else:
-        ValidationError("Invalide Email for".format(email))
+        return False
+
 
 
 

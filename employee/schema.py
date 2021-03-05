@@ -2,6 +2,10 @@ import graphene
 from graphene import Argument
 from graphene_django.types import DjangoObjectType
 from .models import Employee
+from .validation import Email_validator
+from graphql import GraphQLError
+import re
+from django.core.exceptions import ValidationError
 
 
 
@@ -11,10 +15,9 @@ class EmployeeType(DjangoObjectType):
 
 
 
-
-
-
 class Query(object):
+
+
     all_employees = graphene.List(EmployeeType)
     employee = graphene.Field(EmployeeType, id=graphene.ID())
 
@@ -49,23 +52,48 @@ class CreateEmployee(graphene.Mutation):
     # Where you really do all the mutation 🦁 🐉
     def mutate(self, info, username, first_name=None,last_name=None,
                phone_no=None, email=None, description=None,status=True):
-        employee = Employee.objects.create(
-            username=username,
-            first_name=first_name,
-            last_name=last_name,
-            phone_no=phone_no,
-            email=email,
-            description=description,
-            status=status,
-        )
 
-        employee.save()
-        # return an instance of the Mutation 🤷‍♀️
-        return CreateEmployee(
-            employee=employee
-        )
+           if Email_validator(email):
+               user_email= Employee.objects.filter(email=email).exists()
+               if user_email:
+                   raise ValidationError(
+                       {
+                           'New_Email':ValidationError(
+                               "Email Aldready Exists"
+                           )
+                       }
+                   )
+               else:
+                employee = Employee.objects.create(
+                    username=username,
+                    first_name=first_name,
+                    last_name=last_name,
+                    phone_no=phone_no,
+                    email=email,
+                    description=description,
+                    status=status,
+
+                )
 
 
+                employee.save()
+
+
+            # return an instance of the Mutation 🤷‍♀️
+
+                # return an instance of the Mutation 🤷‍♀️
+                return CreateEmployee(
+                    employee=employee
+                )
+
+           else:
+               raise ValidationError(
+                   {
+                       'Email Error':ValidationError(
+                           "Email is not correct"
+                       )
+                   }
+               )
 
 
 
